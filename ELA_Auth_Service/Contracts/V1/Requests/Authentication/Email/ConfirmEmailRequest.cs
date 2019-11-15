@@ -4,6 +4,6 @@
     {
         public string UserId { get; set; }
 
-        public string Code { get; set; }
+        public string Token { get; set; }
     }
 }

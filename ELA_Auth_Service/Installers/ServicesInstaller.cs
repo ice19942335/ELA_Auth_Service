@@ -11,7 +11,8 @@ namespace ELA_Auth_Service.Installers
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
             //Scoped
-            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<ISecurityService, SecurityService>();
 
             //Transient
             services.AddTransient<IEmailService, EmailService>();

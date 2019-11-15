@@ -11,9 +11,9 @@ namespace ELA_Auth_Service.Controllers.V1
     [Produces("application/json")]
     public class AuthenticationController : Controller
     {
-        private readonly IIdentityService _identityService;
+        private readonly IAuthenticationService _authenticationService;
 
-        public AuthenticationController(IIdentityService identityService) => _identityService = identityService;
+        public AuthenticationController(IAuthenticationService authenticationService) => _authenticationService = authenticationService;
 
         /// <summary>
         /// Registration endpoint. Registering user in the system and generating pair Access-Refresh Token
@@ -28,7 +28,7 @@ namespace ELA_Auth_Service.Controllers.V1
             if (!ModelState.IsValid)
                 return BadRequest(new AuthFailedResponse { Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)) });
 
-            var authResponse = await _identityService.RegisterAsync(request);
+            var authResponse = await _authenticationService.RegisterAsync(request.Email, request.Password, request.Name);
 
             if (!authResponse.Success)
                 return BadRequest(new AuthFailedResponse { Errors = authResponse.Errors });
@@ -50,7 +50,7 @@ namespace ELA_Auth_Service.Controllers.V1
         [ProducesResponseType(typeof(AuthFailedResponse), 400)]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
-            var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
+            var authResponse = await _authenticationService.LoginAsync(request.Email, request.Password);
 
             if (!authResponse.Success)
                 return BadRequest(new AuthFailedResponse { Errors = authResponse.Errors });
@@ -79,7 +79,7 @@ namespace ELA_Auth_Service.Controllers.V1
                     CriticalError = true
                 });
 
-            var authResponse = await _identityService.RefreshTokenAsync(request.Token, request.RefreshToken);
+            var authResponse = await _authenticationService.RefreshTokenAsync(request.Token, request.RefreshToken);
 
             if (!authResponse.Success)
                 return BadRequest(new AuthFailedResponse

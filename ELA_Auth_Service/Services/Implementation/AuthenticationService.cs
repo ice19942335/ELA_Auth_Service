@@ -5,9 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Auth;
 using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Email;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Password;
 using ELA_Auth_Service.Data;
 using ELA_Auth_Service.Data._MySqlDataContext;
 using ELA_Auth_Service.Domain.DTO;
@@ -23,20 +21,19 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ELA_Auth_Service.Services.Implementation
 {
-    public class IdentityService : IIdentityService
+    public class AuthenticationService : IAuthenticationService
     {
-        private readonly IEmailService _emailService;
-        private readonly IConfiguration _configuration;
+        private readonly ISecurityService _securityService;
         private readonly UserManager<AppUser> _userManager;
         private readonly JwtSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly DataContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly string _clientUrl;
         private readonly MySqlDataContext _mySqlDataContext;
-        private readonly ILogger<IdentityService> _logger;
+        private readonly ILogger<AuthenticationService> _logger;
 
-        public IdentityService(
+        public AuthenticationService(
+            ISecurityService securityService,
             IEmailService emailService,
             IConfiguration configuration,
             UserManager<AppUser> userManager,
@@ -45,124 +42,21 @@ namespace ELA_Auth_Service.Services.Implementation
             DataContext context,
             RoleManager<IdentityRole> roleManager,
             MySqlDataContext mySqlDataContext,
-            ILogger<IdentityService> logger)
+            ILogger<AuthenticationService> logger)
         {
-            _emailService = emailService;
-            _configuration = configuration;
+            _securityService = securityService;
             _userManager = userManager;
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
             _context = context;
             _roleManager = roleManager;
-            _clientUrl = configuration["ClientSidePasswordResetPath"];
             _mySqlDataContext = mySqlDataContext;
             _logger = logger;
         }
 
-        public async Task<PasswordUpdateDto> PasswordResetRequestAsync(string email)
+        public async Task<AuthenticationDto> RegisterAsync(string email, string password, string name)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (user is null)
-                return new PasswordUpdateDto { Errors = new[] { "DataServiceUser with this email does not exist" }, CriticalError = true };
-            else if (!await _userManager.IsEmailConfirmedAsync(user))
-                return new PasswordUpdateDto { Errors = new[] { "User email is not confirmed, sorry, we can't help you with this" } };
-
-            var secretCode = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            var callBackUrl = $"<a href='{_clientUrl}?userId={user.Id}&code={secretCode}'>Click this link to reset password</a>";
-
-            var sendEmailResult = await _emailService.SendEmailAsync(user.Email, "ELA Password reset", callBackUrl);
-
-            if (!sendEmailResult.Success)
-                return new PasswordUpdateDto { Errors = new[] { "Something went wrong, please try again or contact support" } };
-
-            return new PasswordUpdateDto { Success = true };
-        }
-
-        public async Task<PasswordUpdateDto> PasswordUpdateAsync(PasswordUpdateRequest request)
-        {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-
-            if (user is null)
-                return new PasswordUpdateDto { Errors = new[] { "This user does not exist anymore" }, CriticalError = true };
-
-            var passwordUpdateResult = await _userManager.ResetPasswordAsync(user, request.Code, request.Password);
-
-            if (!passwordUpdateResult.Succeeded)
-            {
-                if (passwordUpdateResult.Errors.FirstOrDefault(x => x.Description == "Invalid token.") is null)
-                    return new PasswordUpdateDto { Errors = passwordUpdateResult.Errors.Select(x => x.Description) };
-
-                return new PasswordUpdateDto
-                {
-                    Errors = passwordUpdateResult.Errors.Select(x => x.Description),
-                    CriticalError = true
-                };
-            }
-
-            var refreshToken = _context.RefreshTokens.FirstOrDefault(x => x.UserId == user.Id);
-
-            if (refreshToken is null)
-                return new PasswordUpdateDto
-                {
-                    Errors = new[] { "Can't find refresh token for this user, this is miracle!" },
-                    CriticalError = true
-                };
-
-            refreshToken.Invalidated = true;
-            await _context.SaveChangesAsync();
-
-            return new PasswordUpdateDto { Success = true };
-        }
-
-        public async Task<EmailConfirmationDto> SendEmailConfirmationRequestAsync(EmailConfirmationRequest request)
-        {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-
-            if (user is null)
-                return new EmailConfirmationDto { Errors = new[] { "User does not exist anymore" } };
-
-            var secretCode = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            var callBackUrl = $"<a href='{_clientUrl}?userId={user.Id}&code={secretCode}'>Click this link to confirm e-mail</a>";
-
-            var sendEmailConfirmationLinkResult = await _emailService.SendEmailAsync(user.Email, "ELA E-mail confirmation", callBackUrl);
-
-            if (!sendEmailConfirmationLinkResult.Success)
-                return new EmailConfirmationDto { Errors = new[] { "Something went wrong, please try again or contact support" }, CriticalError = true };
-
-            return new EmailConfirmationDto { Success = true };
-        }
-
-        public async Task<EmailConfirmationDto> ConfirmEmailAsync(ConfirmEmailRequest request)
-        {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-
-            if (user is null)
-                return new EmailConfirmationDto
-                {
-                    Errors = new[] { "This user does not exist anymore" },
-                    CriticalError = true
-                };
-
-            var emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, request.Code);
-
-            if (!emailConfirmationResult.Succeeded)
-            {
-                return new EmailConfirmationDto
-                {
-                    Errors = new[] { "Something went wrong, please try again or contact support" },
-                    CriticalError = true
-                };
-            }
-
-            return new EmailConfirmationDto { Success = true };
-        }
-
-        public async Task<AuthenticationDto> RegisterAsync(UserRegistrationRequest request)
-        {
-            var existingUser = await _userManager.FindByEmailAsync(request.Email);
+            var existingUser = await _userManager.FindByEmailAsync(email);
 
             if (existingUser != null)
                 return new AuthenticationDto { Errors = new[] { "User with this email address already exists" } };
@@ -171,23 +65,23 @@ namespace ELA_Auth_Service.Services.Implementation
             var newUser = new AppUser
             {
                 Id = newUserGuid.ToString(),
-                Email = request.Email,
-                UserName = request.Email,
-                Name = request.Name
+                Email = email,
+                UserName = email,
+                Name = name
             };
 
-            var created = await _userManager.CreateAsync(newUser, request.Password);
+            var created = await _userManager.CreateAsync(newUser, password);
             if (!created.Succeeded)
                 return new AuthenticationDto { Errors = created.Errors.Select(x => x.Description) };
 
             await _userManager.AddToRoleAsync(newUser, DefaultIdentity.RoleUser);
 
-            var addUserInMySqlDb = await _mySqlDataContext.CreateUser(newUserGuid, request.Name, 0);
+            var addUserInMySqlDb = await _mySqlDataContext.CreateUser(newUserGuid, name, 0);
 
             if (!addUserInMySqlDb)
                 return new AuthenticationDto { Errors = new[] { "Problem on writing entry in MySqlDB" }, CriticalError = true };
 
-            await SendEmailConfirmationRequestAsync(new EmailConfirmationRequest { Email = request.Email });
+            await _securityService.SendEmailConfirmationRequestAsync(email);
 
             return await GenerateAuthenticationResultForUserAsync(newUser);
         }
@@ -227,25 +121,24 @@ namespace ELA_Auth_Service.Services.Implementation
             var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(expiryDateUnix);
 
-            if (expiryDateTimeUtc > DateTime.UtcNow)
-                return new AuthenticationDto { Errors = new[] { "This token hasn't expired jet" } };
-
-            var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-
             var storedRefreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(x => x.Token == refreshToken);
 
             if (storedRefreshToken is null)
                 return new AuthenticationDto { Errors = new[] { "This refresh token does not exist" }, CriticalError = true };
 
-            if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
-                return new AuthenticationDto { Errors = new[] { "This refresh token has expired" }, CriticalError = true };
-
             if (storedRefreshToken.Invalidated)
                 return new AuthenticationDto { Errors = new[] { "This refresh token has been invalidated" }, CriticalError = true };
+
+            if (expiryDateTimeUtc > DateTime.UtcNow)
+                return new AuthenticationDto { Errors = new[] { "This token hasn't expired jet" } };
 
             if (storedRefreshToken.Used)
                 return new AuthenticationDto { Errors = new[] { "This refresh token has been used" }, CriticalError = true };
 
+            if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
+                return new AuthenticationDto { Errors = new[] { "This refresh token has expired" }, CriticalError = true };
+
+            var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
             if (storedRefreshToken.JwtId != jti)
                 return new AuthenticationDto { Errors = new[] { "This refresh token does not match this JWT" }, CriticalError = true };
 

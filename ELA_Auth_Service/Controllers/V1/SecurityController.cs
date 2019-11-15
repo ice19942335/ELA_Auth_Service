@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace ELA_Auth_Service.Controllers.V1
 {
     [Produces("application/json")]
-    public class UserManagerController : Controller
+    public class SecurityController : Controller
     {
-        private readonly IIdentityService _identityService;
+        private readonly ISecurityService _securityService;
 
-        public UserManagerController(IIdentityService identityService, UserManager<AppUser> userManager) => _identityService = identityService;
+        public SecurityController(ISecurityService securityService) => _securityService = securityService;
 
 
         /// <summary>
@@ -35,13 +35,14 @@ namespace ELA_Auth_Service.Controllers.V1
                     CriticalError = true
                 });
 
-            var requestResponse = await _identityService.PasswordResetRequestAsync(request.Email);
+            var requestResponse = await _securityService.PasswordResetRequestAsync(request.Email);
 
             if (!requestResponse.Success)
                 return BadRequest(new PasswordResetRequestFailedResponse { Errors = requestResponse.Errors, CriticalError = requestResponse.CriticalError });
 
             return NoContent();
         }
+
 
         /// <summary>
         /// Update password endpoint returns status code or error object
@@ -52,7 +53,7 @@ namespace ELA_Auth_Service.Controllers.V1
         [HttpPut(ApiRoutes.UserManager.UpdatePassword)]
         public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateRequest request)
         {
-            if (request.UserId is null || request.Password is null || request.Code is null)
+            if (request.UserId is null || request.Password is null || request.Token is null)
             {
                 return BadRequest(new PasswordUpdateFailedResponse
                 {
@@ -61,13 +62,14 @@ namespace ELA_Auth_Service.Controllers.V1
                 });
             }
 
-            var resetResult = await _identityService.PasswordUpdateAsync(request);
+            var resetResult = await _securityService.PasswordUpdateAsync(request.UserId, request.Password, request.Token);
 
             if (!resetResult.Success)
                 return BadRequest(new PasswordUpdateFailedResponse { Errors = resetResult.Errors, CriticalError = resetResult.CriticalError });
 
             return NoContent();
         }
+
 
         /// <summary>
         /// Email confirmation request endpoint, sending link to the provided email
@@ -85,7 +87,7 @@ namespace ELA_Auth_Service.Controllers.V1
                     CriticalError = true
                 });
 
-            var emailConfirmationRequestLink = await _identityService.SendEmailConfirmationRequestAsync(request);
+            var emailConfirmationRequestLink = await _securityService.SendEmailConfirmationRequestAsync(request.Email);
 
             if (!emailConfirmationRequestLink.Success)
                 return BadRequest(new EmailConfirmationResponse
@@ -107,14 +109,14 @@ namespace ELA_Auth_Service.Controllers.V1
         [HttpPut(ApiRoutes.UserManager.ConfirmEmail)]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
-            if (request.UserId is null || request.Code is null)
+            if (request.UserId is null || request.Token is null)
                 return BadRequest(new EmailConfirmationResponse
                 {
                     Errors = new[] { "Please make sure you send correct request, field  can't be null" },
                     CriticalError = true
                 });
 
-            var emailConfirmationResult = await _identityService.ConfirmEmailAsync(request);
+            var emailConfirmationResult = await _securityService.ConfirmEmailAsync(request.UserId, request.Token);
 
             if(!emailConfirmationResult.Success)
                 return BadRequest(new EmailConfirmationResponse
