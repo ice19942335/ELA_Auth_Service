@@ -83,7 +83,7 @@ namespace ELA_Auth_Service.Services.Implementation
                 await _userManager.DeleteAsync(newUser);
                 return new AuthenticationDto { Errors = new[] { "Problem on writing entry in MySqlDB" }, CriticalError = true };
             }
-            
+
             await _securityService.SendEmailConfirmationRequestAsync(email);
 
             return await GenerateAuthenticationResultForUserAsync(newUser);
@@ -96,7 +96,7 @@ namespace ELA_Auth_Service.Services.Implementation
             if (user is null)
             {
                 _logger.LogWarning($"[AUTH FAILED] Email: {email}");
-                return new AuthenticationDto { Errors = new[] { "User does not exist" } };
+                return new AuthenticationDto { Errors = new[] { "User does not exist" }, CriticalError = false };
             }
 
             var userHasValidPassword = await _userManager.CheckPasswordAsync(user, password);
@@ -104,7 +104,7 @@ namespace ELA_Auth_Service.Services.Implementation
             if (!userHasValidPassword)
             {
                 _logger.LogWarning($"[AUTH FAILED] Email: {email}");
-                return new AuthenticationDto { Errors = new[] { "Password is incorrect" } };
+                return new AuthenticationDto { Errors = new[] { "Password is incorrect" }, CriticalError = false };
             }
 
             _logger.LogInformation($"[User: {user.Email} Id: {user.Id}] Successfully logged in");
