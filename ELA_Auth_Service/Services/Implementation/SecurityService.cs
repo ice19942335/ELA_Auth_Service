@@ -33,7 +33,7 @@ namespace ELA_Auth_Service.Services.Implementation
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user is null)
-                return new PasswordUpdateDto { Errors = new[] { "DataServiceUser with this email does not exist" }, CriticalError = true };
+                return new PasswordUpdateDto { Errors = new[] { "User with this email does not exist" }, CriticalError = true };
             else if (!await _userManager.IsEmailConfirmedAsync(user))
                 return new PasswordUpdateDto { Errors = new[] { "User email is not confirmed, sorry, we can't help you with this" } };
 
