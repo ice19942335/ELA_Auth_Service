@@ -15,6 +15,7 @@ namespace ELA_Auth_Service.Controllers.V1
 
         public AuthenticationController(IAuthenticationService authenticationService) => _authenticationService = authenticationService;
 
+
         /// <summary>
         /// Registration endpoint. Registering user in the system and generating pair Access-Refresh Token
         /// </summary>
@@ -38,7 +39,7 @@ namespace ELA_Auth_Service.Controllers.V1
             var authResponse = await _authenticationService.RegisterAsync(request.Email, request.Password, request.Name);
 
             if (!authResponse.Success)
-                return BadRequest(new AuthFailedResponse { Errors = authResponse.Errors });
+                return BadRequest(new AuthFailedResponse { Errors = authResponse.Errors, CriticalError = authResponse.CriticalError });
 
             return Ok(new AuthSuccessResponse
             {
@@ -46,6 +47,7 @@ namespace ELA_Auth_Service.Controllers.V1
                 RefreshToken = authResponse.RefreshToken
             });
         }
+
 
         /// <summary>
         /// Login endpoint. If provided credentials are correct, then Generating new pair Access-Refresh Token
@@ -68,6 +70,7 @@ namespace ELA_Auth_Service.Controllers.V1
                 RefreshToken = authResponse.RefreshToken
             });
         }
+
 
         /// <summary>
         /// Refresh endpoint.  If the provided pair is valid, then generating a new pair Access-Refresh Token
