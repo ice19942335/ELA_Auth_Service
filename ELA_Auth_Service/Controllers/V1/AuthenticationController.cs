@@ -72,7 +72,7 @@ namespace ELA_Auth_Service.Controllers.V1
             var authResponse = await _authenticationService.LoginAsync(request.Email, request.Password);
 
             if (!authResponse.Success)
-                return BadRequest(new AuthFailedResponse { Errors = authResponse.Errors, CriticalError = authResponse.CriticalError});
+                return BadRequest(new AuthFailedResponse { Errors = authResponse.Errors, CriticalError = authResponse.CriticalError });
 
             return Ok(new AuthSuccessResponse
             {
@@ -102,11 +102,7 @@ namespace ELA_Auth_Service.Controllers.V1
             var authResponse = await _authenticationService.RefreshTokenAsync(request.Token, request.RefreshToken);
 
             if (!authResponse.Success)
-                return BadRequest(new AuthFailedResponse
-                {
-                    Errors = authResponse.Errors,
-                    CriticalError = authResponse.CriticalError
-                });
+                return BadRequest(new AuthFailedResponse { Errors = authResponse.Errors, CriticalError = authResponse.CriticalError });
 
             return Ok(new AuthSuccessResponse
             {
