@@ -113,7 +113,35 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             Assert.Contains("User with this email address already exists", authFailedResponse.Errors);
         }
 
+        [TestMethod]
+        public void Register_Method_Returns_BadRequest_On_UserCreation()
+        {
+            var authServiceMock = new Mock<IAuthenticationService>();
+            authServiceMock
+                .Setup(x => x.RegisterAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new AuthenticationDto
+                {
+                    Errors = new[] { "Passwords must have at least one non alphanumeric character." },
+                    CriticalError = false,
+                    Success = false
+                }));
 
+            var controller = new AuthenticationController(authServiceMock.Object);
+
+            var result = controller.Register(new UserRegistrationRequest
+            {
+                Name = "TestName",
+                Email = "testEmail@gmail.com",
+                Password = "TestPassword123"
+            });
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("Passwords must have at least one non alphanumeric character.", authFailedResponse.Errors);
+        }
 
         #endregion
     }
