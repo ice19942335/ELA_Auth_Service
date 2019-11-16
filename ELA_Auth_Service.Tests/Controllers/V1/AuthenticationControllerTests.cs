@@ -36,6 +36,25 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             
         }
 
+        #region Register
+
+        [TestMethod]
+        public void Register_Method_Returns_BadRequest_On_IncorrectRequest()
+        {
+            var authServiceMock = new Mock<IAuthenticationService>();
+
+            var controller = new AuthenticationController(authServiceMock.Object);
+
+            var result = controller.Register(new UserRegistrationRequest());
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("Please make sure you send correct request, field can't be null", authFailedResponse.Errors);
+        }
+
         [TestMethod]
         public void Register_Method_Returns_BadRequest_On_ModelStateFalse()
         {
@@ -59,7 +78,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             var modelStateIsValid = authFailedResponse.Errors?.Count() > 0;
 
             Assert.Equal(400, statusCode);
-            Assert.Equal(false, authFailedResponse?.CriticalError);
+            Assert.False(authFailedResponse.CriticalError);
             Assert.True(modelStateIsValid);
         }
 
@@ -72,21 +91,30 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
                 .Returns(Task.FromResult(new AuthenticationDto
                 {
                     Errors = new[] { "User with this email address already exists" },
-                    CriticalError = true,
+                    CriticalError = false,
                     Success = false
                 }));
 
             var controller = new AuthenticationController(authServiceMock.Object);
 
-            var result = controller.Register(new UserRegistrationRequest());
+            var result = controller.Register(new UserRegistrationRequest
+            {
+                Name = "TestName",
+                Email = "testEmail@gmail.com",
+                Password = "TestPassword123!"
+            });
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
             var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
             
             Assert.Equal(400, statusCode);
-            Assert.Equal(false, authFailedResponse?.CriticalError);
-            Assert.Equal(authFailedResponse.Errors.ToArray()[0], "User with this email address already exists");
+            Assert.False(authFailedResponse.CriticalError);
+            Assert.Contains("User with this email address already exists", authFailedResponse.Errors);
         }
+
+
+
+        #endregion
     }
 }
