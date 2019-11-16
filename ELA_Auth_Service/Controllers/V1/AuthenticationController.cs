@@ -59,6 +59,16 @@ namespace ELA_Auth_Service.Controllers.V1
         [ProducesResponseType(typeof(AuthFailedResponse), 400)]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
+            if (request.Email is null || request.Password is null)
+                return BadRequest(new AuthFailedResponse
+                {
+                    Errors = new[] { "Please make sure you send correct request, field can't be null" },
+                    CriticalError = true
+                });
+
+            if (!ModelState.IsValid)
+                return BadRequest(new AuthFailedResponse { Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)) });
+
             var authResponse = await _authenticationService.LoginAsync(request.Email, request.Password);
 
             if (!authResponse.Success)

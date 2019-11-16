@@ -34,7 +34,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
         [TestInitialize]
         public void Initialize()
         {
-            
+
         }
 
         #region Register
@@ -108,7 +108,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
             var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
-            
+
             Assert.Equal(400, statusCode);
             Assert.False(authFailedResponse.CriticalError);
             Assert.Contains("User with this email address already exists", authFailedResponse.Errors);
@@ -197,13 +197,87 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
                 Password = "TestPassword123!"
             });
 
-            var badRequestResult = Assert.IsType<OkObjectResult>(result.Result);
-            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
-            var authResponse = Assert.IsAssignableFrom<AuthSuccessResponse>(badRequestResult.Value);
+            var successRequestResult = Assert.IsType<OkObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(successRequestResult.StatusCode);
+            var authResponse = Assert.IsAssignableFrom<AuthSuccessResponse>(successRequestResult.Value);
 
             Assert.Equal(200, statusCode);
             Assert.NotNull(authResponse.Token);
             Assert.NotNull(authResponse.RefreshToken);
+        }
+
+        #endregion
+
+        #region Login
+
+        [TestMethod]
+        public void Login_Method_Returns_BadRequest_On_IncorrectRequest()
+        {
+            var authServiceMock = new Mock<IAuthenticationService>();
+
+            var controller = new AuthenticationController(authServiceMock.Object);
+
+            var result = controller.Login(new UserLoginRequest());
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("Please make sure you send correct request, field can't be null", authResponse.Errors);
+        }
+
+        [TestMethod]
+        public async Task Login_Method_Returns_BadRequest_On_ModelStateFalse()
+        {
+            var authServiceMock = new Mock<IAuthenticationService>();
+
+            var controller = new AuthenticationController(authServiceMock.Object);
+
+            controller.ModelState.AddModelError("", "Model is incorrect");
+
+            var result = await controller.Login(new UserLoginRequest
+            {
+                Email = "WrongEmail",
+                Password = "WrongPassword"
+            });
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.False(authFailedResponse.CriticalError);
+            Assert.NotEmpty(authFailedResponse.Errors);
+        }
+
+        [TestMethod]
+        public void Login_Method_Returns_BadRequest_On_UserNotExist()
+        {
+            var authServiceMock = new Mock<IAuthenticationService>();
+            authServiceMock
+                .Setup(x => x.LoginAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new AuthenticationDto
+                {
+                    Errors = new[] { "User does not exist" },
+                    CriticalError = false,
+                    Success = false
+                }));
+
+            var controller = new AuthenticationController(authServiceMock.Object);
+
+            var result = controller.Login(new UserLoginRequest
+            {
+                Email = "testEmail@Gmail.com",
+                Password = "TestPassword123!"
+            });
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("User does not exist", authResponse.Errors);
         }
 
         #endregion
