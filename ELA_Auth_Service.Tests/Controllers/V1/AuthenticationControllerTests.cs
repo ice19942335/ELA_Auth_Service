@@ -37,6 +37,33 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
         }
 
         [TestMethod]
+        public void Register_Method_Returns_BadRequest_On_ModelStateFalse()
+        {
+            var authServiceMock = new Mock<IAuthenticationService>();
+
+            var controller = new AuthenticationController(authServiceMock.Object);
+
+            controller.ModelState.AddModelError("", "Model is incorrect");
+
+            var result = controller.Register(new UserRegistrationRequest
+            {
+                Name = "TestName",
+                Email = "WrongEmail",
+                Password = "WrongPassword"
+            });
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
+
+            var modelStateIsValid = authFailedResponse.Errors?.Count() > 0;
+
+            Assert.Equal(400, statusCode);
+            Assert.Equal(false, authFailedResponse?.CriticalError);
+            Assert.True(modelStateIsValid);
+        }
+
+        [TestMethod]
         public void Register_Method_Returns_BadRequest_On_ExistingUserInSystem()
         {
             var authServiceMock = new Mock<IAuthenticationService>();
@@ -58,7 +85,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
             
             Assert.Equal(400, statusCode);
-            Assert.Equal(false, authFailedResponse.CriticalError);
+            Assert.Equal(false, authFailedResponse?.CriticalError);
             Assert.Equal(authFailedResponse.Errors.ToArray()[0], "User with this email address already exists");
         }
     }
