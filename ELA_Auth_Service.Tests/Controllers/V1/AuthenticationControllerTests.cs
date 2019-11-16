@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Renci.SshNet;
 using Swashbuckle.AspNetCore.Filters.Extensions;
 using Xunit.Sdk;
 
@@ -141,6 +142,37 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             Assert.Equal(400, statusCode);
             Assert.Contains("Passwords must have at least one non alphanumeric character.", authFailedResponse.Errors);
+        }
+
+        [TestMethod]
+        public void Register_Method_Returns_OK_On_Success_Registration()
+        {
+            var authServiceMock = new Mock<IAuthenticationService>();
+            authServiceMock
+                .Setup(x => x.RegisterAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new AuthenticationDto
+                {
+                    Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2UxOTk0MjMzNUBnbWFpbC5jb20iLCJqdGkiOiI4YmFlZjMxNS02MjMxLTRmMWItOWQ4YS1hMWQ4MmI2NWQwMzMiLCJlbWFpbCI6ImljZTE5OTQyMzM1QGdtYWlsLmNvbSIsImlkIjoiZTdlOTRjMTEtMjBkNy00NjAyLWJjNzAtMGYwMTVjZDA0MWJkIiwibmJmIjoxNTcyOTUwMDc5LCJleHAiOjE1NzI5NTA5NzksImlhdCI6MTU3Mjk1MDA3OX0.9mR8PcLySEvLqZOJZQedbjepb2vs4s4CZCBBdDYlRpM",
+                    RefreshToken = "e3107d7b-f27d-4025-8c1d-81d1471b04f2",
+                    Success = true
+                }));
+
+            var controller = new AuthenticationController(authServiceMock.Object);
+
+            var result = controller.Register(new UserRegistrationRequest
+            {
+                Name = "TestName",
+                Email = "testEmail@gmail.com",
+                Password = "TestPassword123!"
+            });
+
+            var badRequestResult = Assert.IsType<OkObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authResponse = Assert.IsAssignableFrom<AuthSuccessResponse>(badRequestResult.Value);
+
+            Assert.Equal(200, statusCode);
+            Assert.NotNull(authResponse.Token);
+            Assert.NotNull(authResponse.RefreshToken);
         }
 
         #endregion
