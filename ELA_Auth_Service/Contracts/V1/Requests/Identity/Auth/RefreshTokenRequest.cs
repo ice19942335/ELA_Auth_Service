@@ -1,4 +1,4 @@
-﻿namespace ELA_Auth_Service.Contracts.V1.Requests.Authentication.Auth
+﻿namespace ELA_Auth_Service.Contracts.V1.Requests.Identity.Auth
 {
     public class RefreshTokenRequest
     {

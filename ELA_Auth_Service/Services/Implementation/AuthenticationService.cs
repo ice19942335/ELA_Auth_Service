@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Email;
 using ELA_Auth_Service.Data;
 using ELA_Auth_Service.Data._MySqlDataContext;
 using ELA_Auth_Service.Domain.DTO;

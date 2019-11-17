@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Email;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Password;
 using ELA_Auth_Service.Domain.DTO;
 
 namespace ELA_Auth_Service.Services.Interfaces

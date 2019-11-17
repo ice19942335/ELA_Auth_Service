@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Email;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Password;
 using ELA_Auth_Service.Data;
 using ELA_Auth_Service.Domain.DTO;
 using ELA_Auth_Service.Domain.Entities;
@@ -34,7 +32,8 @@ namespace ELA_Auth_Service.Services.Implementation
 
             if (user is null)
                 return new PasswordUpdateDto { Errors = new[] { "User with this email does not exist" }, CriticalError = true };
-            else if (!await _userManager.IsEmailConfirmedAsync(user))
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
                 return new PasswordUpdateDto { Errors = new[] { "User email is not confirmed, sorry, we can't help you with this" } };
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);

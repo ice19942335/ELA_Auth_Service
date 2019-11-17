@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Password;
-using ELA_Auth_Service.Contracts.V1.Responses.Authentication.Password;
+using ELA_Auth_Service.Contracts.V1.Requests.Identity.Password;
+using ELA_Auth_Service.Contracts.V1.Responses.Identity.Password;
 using ELA_Auth_Service.Controllers.V1;
 using ELA_Auth_Service.Domain.DTO;
 using ELA_Auth_Service.Services.Interfaces;
@@ -37,6 +38,27 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             Assert.Equal(400, statusCode);
             Assert.Contains("Please make sure you send correct request, field can't be null", passwordResetRequestFailedResponse.Errors);
+        }
+
+        [TestMethod]
+        public void PasswordResetRequest_Method_Returns_BadRequest_On_ModelStateFalse()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            controller.ModelState.AddModelError("", "Model is incorrect");
+
+            var result = controller.PasswordResetRequest(new PasswordResetRequest { Email = "WrongEmail" });
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authFailedResponse = Assert.IsAssignableFrom<PasswordResetRequestFailedResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.False(authFailedResponse.CriticalError);
+            Assert.NotNull(authFailedResponse.Errors);
+            Assert.NotEmpty(authFailedResponse.Errors);
         }
 
         [TestMethod]
@@ -133,6 +155,27 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
 
             Assert.Equal(204, statusCode);
+        }
+
+        #endregion
+
+        #region PasswordUpdate
+
+        [TestMethod]
+        public async Task PasswordUpdate_Method_Returns_BadRequest_On_IncorrectRequest()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.UpdatePassword(new PasswordUpdateRequest());
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
+            var passwordUpdateFailedResponse = Assert.IsAssignableFrom<PasswordUpdateFailedResponse>(badRequestObjectResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("Please make sure you send correct request, field can't be null", passwordUpdateFailedResponse.Errors);
         }
 
         #endregion

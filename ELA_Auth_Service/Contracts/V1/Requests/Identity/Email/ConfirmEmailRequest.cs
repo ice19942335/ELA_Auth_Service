@@ -1,4 +1,4 @@
-﻿namespace ELA_Auth_Service.Contracts.V1.Requests.Authentication.Email
+﻿namespace ELA_Auth_Service.Contracts.V1.Requests.Identity.Email
 {
     public class ConfirmEmailRequest
     {

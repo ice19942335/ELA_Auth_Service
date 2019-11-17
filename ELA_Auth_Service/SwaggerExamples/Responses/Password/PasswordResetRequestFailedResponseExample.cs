@@ -1,4 +1,4 @@
-﻿using ELA_Auth_Service.Contracts.V1.Responses.Authentication.Password;
+﻿using ELA_Auth_Service.Contracts.V1.Responses.Identity.Password;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace ELA_Auth_Service.SwaggerExamples.Responses.Password

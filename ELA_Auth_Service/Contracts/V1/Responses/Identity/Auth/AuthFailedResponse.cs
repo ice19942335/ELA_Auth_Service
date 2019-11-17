@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ELA_Auth_Service.Contracts.V1.Responses.Authentication.Auth
+namespace ELA_Auth_Service.Contracts.V1.Responses.Identity.Auth
 {
     public class AuthFailedResponse
     {

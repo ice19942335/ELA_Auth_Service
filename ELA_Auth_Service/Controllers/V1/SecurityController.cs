@@ -1,13 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using ELA_Auth_Service.Contracts.V1;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Email;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Password;
-using ELA_Auth_Service.Contracts.V1.Responses.Authentication.Email;
-using ELA_Auth_Service.Contracts.V1.Responses.Authentication.Password;
+using ELA_Auth_Service.Contracts.V1.Requests.Identity.Email;
+using ELA_Auth_Service.Contracts.V1.Requests.Identity.Password;
+using ELA_Auth_Service.Contracts.V1.Responses.Identity.Email;
+using ELA_Auth_Service.Contracts.V1.Responses.Identity.Password;
 using ELA_Auth_Service.Domain.Entities;
 using ELA_Auth_Service.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELA_Auth_Service.Controllers.V1
 {
@@ -33,6 +35,12 @@ namespace ELA_Auth_Service.Controllers.V1
                 {
                     Errors = new[] { "Please make sure you send correct request, field can't be null" },
                     CriticalError = true
+                });
+
+            if (!ModelState.IsValid)
+                return BadRequest(new PasswordResetRequestFailedResponse
+                {
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
                 });
 
             var requestResponse = await _securityService.PasswordResetRequestAsync(request.Email);

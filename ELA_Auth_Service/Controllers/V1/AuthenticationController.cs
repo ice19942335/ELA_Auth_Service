@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using ELA_Auth_Service.Contracts.V1;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Auth;
-using ELA_Auth_Service.Contracts.V1.Responses.Authentication.Auth;
+using ELA_Auth_Service.Contracts.V1.Requests.Identity.Auth;
+using ELA_Auth_Service.Contracts.V1.Responses.Identity.Auth;
 using ELA_Auth_Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

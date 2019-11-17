@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Contracts.V1.Requests.Authentication.Auth;
-using ELA_Auth_Service.Contracts.V1.Responses.Authentication.Auth;
+using ELA_Auth_Service.Contracts.V1.Requests.Identity.Auth;
+using ELA_Auth_Service.Contracts.V1.Responses.Identity.Auth;
 using ELA_Auth_Service.Controllers.V1;
 using ELA_Auth_Service.Data;
 using ELA_Auth_Service.Data._MySqlDataContext;
@@ -71,11 +71,10 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
             var authFailedResponse = Assert.IsAssignableFrom<AuthFailedResponse>(badRequestResult.Value);
 
-            var modelStateIsValid = authFailedResponse.Errors?.Count() > 0;
-
             Assert.Equal(400, statusCode);
             Assert.False(authFailedResponse.CriticalError);
-            Assert.True(modelStateIsValid);
+            Assert.NotNull(authFailedResponse.Errors);
+            Assert.NotEmpty(authFailedResponse.Errors);
         }
 
         [TestMethod]

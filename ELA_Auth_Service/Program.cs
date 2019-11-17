@@ -19,10 +19,17 @@ namespace ELA_Auth_Service
         public static async Task Main(string[] args)
         {
             var path = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LOG"), "ELA_AUTH_LOG.txt"); //ELA_AUTH_LOG.txt
+            var path2 = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LOG"), "ELA_AUTH_LOG2.txt"); //ELA_AUTH_LOG2.txt
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .WriteTo.File(
                     path,
+                    fileSizeLimitBytes: 1_000_000,
+                    rollOnFileSizeLimit: true,
+                    shared: true,
+                    flushToDiskInterval: TimeSpan.FromSeconds(1))
+                .WriteTo.File(
+                    path2,
                     fileSizeLimitBytes: 1_000_000,
                     rollOnFileSizeLimit: true,
                     shared: true,

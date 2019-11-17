@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SendGrid.Helpers.Mail;
 
-namespace ELA_Auth_Service.Contracts.V1.Requests.Authentication.Password
+namespace ELA_Auth_Service.Contracts.V1.Requests.Identity.Password
 {
     public class PasswordResetRequest
     {
