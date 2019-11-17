@@ -84,19 +84,19 @@ namespace ELA_Auth_Service.Controllers.V1
         /// </summary>
         /// <response code="204">Sending link to the provided email</response>
         /// <response code="400">Return list of errors, an error can be critical</response>
-        [ProducesResponseType(typeof(EmailConfirmationResponse), 400)]
+        [ProducesResponseType(typeof(ConfirmationEmailResponse), 400)]
         [HttpPost(ApiRoutes.UserManager.EmailConfirmationRequest)]
         public async Task<IActionResult> EmailConfirmationRequest([FromBody] EmailConfirmationRequest request)
         {
             if (request.Email is null)
-                return BadRequest(new EmailConfirmationResponse
+                return BadRequest(new ConfirmationEmailResponse
                 {
                     Errors = new[] { "Please make sure you send correct request, field can't be null" },
                     CriticalError = true
                 });
 
             if (!ModelState.IsValid)
-                return BadRequest(new EmailConfirmationResponse
+                return BadRequest(new ConfirmationEmailResponse
                 {
                     Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
                 });
@@ -104,7 +104,7 @@ namespace ELA_Auth_Service.Controllers.V1
             var emailConfirmationRequestLink = await _securityService.SendEmailConfirmationRequestAsync(request.Email);
 
             if (!emailConfirmationRequestLink.Success)
-                return BadRequest(new EmailConfirmationResponse
+                return BadRequest(new ConfirmationEmailResponse
                 {
                     Errors = emailConfirmationRequestLink.Errors,
                     CriticalError = emailConfirmationRequestLink.CriticalError
@@ -119,21 +119,21 @@ namespace ELA_Auth_Service.Controllers.V1
         /// </summary>
         /// <response code="204">Email was successfully confirmed</response>
         /// <response code="400">Return list of errors, an error can be critical</response>
-        [ProducesResponseType(typeof(EmailConfirmationResponse), 400)]
+        [ProducesResponseType(typeof(ConfirmationEmailResponse), 400)]
         [HttpPut(ApiRoutes.UserManager.ConfirmEmail)]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
             if (request.UserId is null || request.Token is null)
-                return BadRequest(new EmailConfirmationResponse
+                return BadRequest(new ConfirmationEmailResponse
                 {
-                    Errors = new[] { "Please make sure you send correct request, field  can't be null" },
+                    Errors = new[] { "Please make sure you send correct request, field can't be null" },
                     CriticalError = true
                 });
 
             var emailConfirmationResult = await _securityService.ConfirmEmailAsync(request.UserId, request.Token);
 
             if(!emailConfirmationResult.Success)
-                return BadRequest(new EmailConfirmationResponse
+                return BadRequest(new ConfirmationEmailResponse
                 {
                     Errors = emailConfirmationResult.Errors,
                     CriticalError = emailConfirmationResult.CriticalError

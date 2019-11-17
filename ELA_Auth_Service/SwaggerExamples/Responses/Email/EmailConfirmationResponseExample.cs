@@ -3,11 +3,11 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace ELA_Auth_Service.SwaggerExamples.Responses.Email
 {
-    public class EmailConfirmationResponseExample : IExamplesProvider<EmailConfirmationResponse>
+    public class EmailConfirmationResponseExample : IExamplesProvider<ConfirmationEmailResponse>
     {
-        public EmailConfirmationResponse GetExamples()
+        public ConfirmationEmailResponse GetExamples()
         {
-            return new EmailConfirmationResponse
+            return new ConfirmationEmailResponse
             {
                 Errors = new []{ "User does not exist anymore" },
                 CriticalError = true

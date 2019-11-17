@@ -283,7 +283,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
-            var emailConfirmationResponse = Assert.IsAssignableFrom<EmailConfirmationResponse>(badRequestObjectResult.Value);
+            var emailConfirmationResponse = Assert.IsAssignableFrom<ConfirmationEmailResponse>(badRequestObjectResult.Value);
 
             Assert.Equal(400, statusCode);
             Assert.Contains("Please make sure you send correct request, field can't be null", emailConfirmationResponse.Errors);
@@ -302,7 +302,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
-            var authFailedResponse = Assert.IsAssignableFrom<EmailConfirmationResponse>(badRequestResult.Value);
+            var authFailedResponse = Assert.IsAssignableFrom<ConfirmationEmailResponse>(badRequestResult.Value);
 
             Assert.Equal(400, statusCode);
             Assert.False(authFailedResponse.CriticalError);
@@ -329,7 +329,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
-            var emailConfirmationResponse = Assert.IsAssignableFrom<EmailConfirmationResponse>(badRequestResult.Value);
+            var emailConfirmationResponse = Assert.IsAssignableFrom<ConfirmationEmailResponse>(badRequestResult.Value);
 
             Assert.Equal(400, statusCode);
             Assert.False(emailConfirmationResponse.CriticalError);
@@ -347,6 +347,109 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
             var controller = new SecurityController(securityServiceMock.Object);
 
             var result = await controller.EmailConfirmationRequest(new EmailConfirmationRequest { Email = "sam.atkins@gmail.com" });
+
+            var badRequestResult = Assert.IsType<NoContentResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+
+            Assert.Equal(204, statusCode);
+        }
+
+        #endregion
+
+        #region ConfirmEmail
+
+        [TestMethod]
+        public async Task ConfirmEmail_Method_Returns_BadRequest_On_IncorrectRequest()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.ConfirmEmail(new ConfirmEmailRequest());
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
+            var confirmEmailFailedRedResponse = Assert.IsAssignableFrom<ConfirmationEmailResponse>(badRequestObjectResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("Please make sure you send correct request, field can't be null", confirmEmailFailedRedResponse.Errors);
+        }
+
+        [TestMethod]
+        public async Task ConfirmEmail_Method_Returns_BadRequest_On_NotExistingUser()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+            securityServiceMock
+                .Setup(x => x.ConfirmEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new EmailConfirmationDto
+                {
+                    Errors = new[] { "This user does not exist anymore" },
+                    CriticalError = true,
+                    Success = false
+                }));
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.ConfirmEmail(new ConfirmEmailRequest
+            {
+                UserId = "520901e0-fe4e-4a06-9195-9f35ba05e094",
+                Token = "CfDJ8JgR+bdQlp9AiexmNdwmv6Fo38Zi6LS1gfO/Ze2YXmV8QAWJos0oKWZ7FIrr+C2hKWVLgkMQ2Wr+zAiwk/z+Ow9f3rdThOSATiWIC8KVSraZvt7ZP2UR6dWPAZgZYZayPWGnGC6q2nc5NMPQQmIUFoiH+R9bMOnuM3bsML/sb7yAmXJILCLlcnH3qktSg9PauMExiY6eOnYzHIlm6een0aMHboXZ6lA1YtqtKQXd8RUB"
+            });
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
+            var confirmEmailFailedRedResponse = Assert.IsAssignableFrom<ConfirmationEmailResponse>(badRequestObjectResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("This user does not exist anymore", confirmEmailFailedRedResponse.Errors);
+            Assert.True(confirmEmailFailedRedResponse.CriticalError);
+        }
+
+        [TestMethod]
+        public async Task ConfirmEmail_Method_Returns_BadRequest_On_ExpiredToken()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+            securityServiceMock
+                .Setup(x => x.ConfirmEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new EmailConfirmationDto
+                {
+                    Errors = new[] { "Expired link, please make another request" },
+                    CriticalError = false,
+                    Success = false
+                }));
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.ConfirmEmail(new ConfirmEmailRequest
+            {
+                UserId = "520901e0-fe4e-4a06-9195-9f35ba05e094",
+                Token = "CfDJ8JgR+bdQlp9AiexmNdwmv6Fo38Zi6LS1gfO/Ze2YXmV8QAWJos0oKWZ7FIrr+C2hKWVLgkMQ2Wr+zAiwk/z+Ow9f3rdThOSATiWIC8KVSraZvt7ZP2UR6dWPAZgZYZayPWGnGC6q2nc5NMPQQmIUFoiH+R9bMOnuM3bsML/sb7yAmXJILCLlcnH3qktSg9PauMExiY6eOnYzHIlm6een0aMHboXZ6lA1YtqtKQXd8RUB"
+            });
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
+            var confirmEmailFailedRedResponse = Assert.IsAssignableFrom<ConfirmationEmailResponse>(badRequestObjectResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("Expired link, please make another request", confirmEmailFailedRedResponse.Errors);
+            Assert.False(confirmEmailFailedRedResponse.CriticalError);
+        }
+
+        [TestMethod]
+        public async Task ConfirmEmail_Method_Returns_OK_On_SuccessUpdate()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+            securityServiceMock
+                .Setup(x => x.ConfirmEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new EmailConfirmationDto { Success = true }));
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.ConfirmEmail(new ConfirmEmailRequest
+            {
+                UserId = "520901e0-fe4e-4a06-9195-9f35ba05e094",
+                Token = "CfDJ8JgR+bdQlp9AiexmNdwmv6Fo38Zi6LS1gfO/Ze2YXmV8QAWJos0oKWZ7FIrr+C2hKWVLgkMQ2Wr+zAiwk/z+Ow9f3rdThOSATiWIC8KVSraZvt7ZP2UR6dWPAZgZYZayPWGnGC6q2nc5NMPQQmIUFoiH+R9bMOnuM3bsML/sb7yAmXJILCLlcnH3qktSg9PauMExiY6eOnYzHIlm6een0aMHboXZ6lA1YtqtKQXd8RUB"
+            });
 
             var badRequestResult = Assert.IsType<NoContentResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);

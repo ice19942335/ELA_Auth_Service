@@ -65,11 +65,7 @@ namespace ELA_Auth_Service.Services.Implementation
                 //-----------
 
                 //Invalid token
-                return new PasswordUpdateDto
-                {
-                    Errors = new[] { "Expired link, please make another request" },
-                    CriticalError = true
-                };
+                return new PasswordUpdateDto { Errors = new[] { "Expired link, please make another request" } };
                 //-------------
             }
 
@@ -95,7 +91,7 @@ namespace ELA_Auth_Service.Services.Implementation
             var sendEmailConfirmationLinkResult = await _emailService.SendEmailAsync(user.Email, "ELA E-mail confirmation", callBackUrl);
 
             if (!sendEmailConfirmationLinkResult.Success)
-                return new EmailConfirmationDto { Errors = new[] { "Something went wrong, please try again or contact support" }, CriticalError = true };
+                return new EmailConfirmationDto { Errors = new[] { "Something went wrong, please try again or contact support" } };
 
             return new EmailConfirmationDto { Success = true };
         }
@@ -115,11 +111,14 @@ namespace ELA_Auth_Service.Services.Implementation
 
             if (!emailConfirmationResult.Succeeded)
             {
-                return new EmailConfirmationDto
-                {
-                    Errors = new[] { "Something went wrong, please try again or contact support" },
-                    CriticalError = true
-                };
+                //Valid token
+                if (emailConfirmationResult.Errors.FirstOrDefault(x => x.Description == "Invalid token.") is null)
+                    return new EmailConfirmationDto { Errors = emailConfirmationResult.Errors.Select(x => x.Description) };
+                //-----------
+
+                //Invalid token
+                return new EmailConfirmationDto { Errors = new[] { "Expired link, please make another request" } };
+                //-------------
             }
 
             return new EmailConfirmationDto { Success = true };
