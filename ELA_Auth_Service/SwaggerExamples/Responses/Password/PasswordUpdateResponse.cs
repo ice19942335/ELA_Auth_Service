@@ -3,11 +3,11 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace ELA_Auth_Service.SwaggerExamples.Responses.Password
 {
-    public class PasswordUpdateFailedResponseExample : IExamplesProvider<PasswordUpdateFailedResponse>
+    public class PasswordUpdateResponseExample : IExamplesProvider<PasswordUpdateResponse>
     {
-        public PasswordUpdateFailedResponse GetExamples()
+        public PasswordUpdateResponse GetExamples()
         {
-            return new PasswordUpdateFailedResponse
+            return new PasswordUpdateResponse
             {
                 Errors = new []{ "This user does not exist anymore" },
                 CriticalError = true

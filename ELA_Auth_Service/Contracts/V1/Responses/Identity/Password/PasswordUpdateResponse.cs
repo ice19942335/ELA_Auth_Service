@@ -2,7 +2,7 @@
 
 namespace ELA_Auth_Service.Contracts.V1.Responses.Identity.Password
 {
-    public class PasswordUpdateFailedResponse
+    public class PasswordUpdateResponse
     {
         public IEnumerable<string> Errors { get; set; }
 

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ELA_Auth_Service.Contracts.V1.Requests.Identity.Email;
 using ELA_Auth_Service.Contracts.V1.Requests.Identity.Password;
+using ELA_Auth_Service.Contracts.V1.Responses.Identity.Email;
 using ELA_Auth_Service.Contracts.V1.Responses.Identity.Password;
 using ELA_Auth_Service.Controllers.V1;
 using ELA_Auth_Service.Domain.DTO;
@@ -34,10 +36,10 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
-            var passwordResetRequestFailedResponse = Assert.IsAssignableFrom<PasswordResetRequestFailedResponse>(badRequestObjectResult.Value);
+            var passwordUpdateResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestObjectResult.Value);
 
             Assert.Equal(400, statusCode);
-            Assert.Contains("Please make sure you send correct request, field can't be null", passwordResetRequestFailedResponse.Errors);
+            Assert.Contains("Please make sure you send correct request, field can't be null", passwordUpdateResponse.Errors);
         }
 
         [TestMethod]
@@ -53,7 +55,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
-            var authFailedResponse = Assert.IsAssignableFrom<PasswordResetRequestFailedResponse>(badRequestResult.Value);
+            var authFailedResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestResult.Value);
 
             Assert.Equal(400, statusCode);
             Assert.False(authFailedResponse.CriticalError);
@@ -80,11 +82,11 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
-            var passwordResetRequestFailedResponse = Assert.IsAssignableFrom<PasswordResetRequestFailedResponse>(badRequestResult.Value);
+            var passwordUpdateResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestResult.Value);
 
             Assert.Equal(400, statusCode);
-            Assert.True(passwordResetRequestFailedResponse.CriticalError);
-            Assert.Contains("User with this email does not exist", passwordResetRequestFailedResponse.Errors);
+            Assert.True(passwordUpdateResponse.CriticalError);
+            Assert.Contains("User with this email does not exist", passwordUpdateResponse.Errors);
         }
 
         [TestMethod]
@@ -106,11 +108,11 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
-            var passwordResetRequestFailedResponse = Assert.IsAssignableFrom<PasswordResetRequestFailedResponse>(badRequestResult.Value);
+            var passwordUpdateResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestResult.Value);
 
             Assert.Equal(400, statusCode);
-            Assert.False(passwordResetRequestFailedResponse.CriticalError);
-            Assert.Contains("User email is not confirmed, sorry, we can't help you with this", passwordResetRequestFailedResponse.Errors);
+            Assert.False(passwordUpdateResponse.CriticalError);
+            Assert.Contains("User email is not confirmed, sorry, we can't help you with this", passwordUpdateResponse.Errors);
         }
 
         [TestMethod]
@@ -132,11 +134,11 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
-            var passwordResetRequestFailedResponse = Assert.IsAssignableFrom<PasswordResetRequestFailedResponse>(badRequestResult.Value);
+            var passwordUpdateResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestResult.Value);
 
             Assert.Equal(400, statusCode);
-            Assert.False(passwordResetRequestFailedResponse.CriticalError);
-            Assert.Contains("Something went wrong, please try again or contact support", passwordResetRequestFailedResponse.Errors);
+            Assert.False(passwordUpdateResponse.CriticalError);
+            Assert.Contains("Something went wrong, please try again or contact support", passwordUpdateResponse.Errors);
         }
 
         [TestMethod]
@@ -172,7 +174,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
-            var passwordUpdateFailedResponse = Assert.IsAssignableFrom<PasswordUpdateFailedResponse>(badRequestObjectResult.Value);
+            var passwordUpdateFailedResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestObjectResult.Value);
 
             Assert.Equal(400, statusCode);
             Assert.Contains("Please make sure you send correct request, field can't be null", passwordUpdateFailedResponse.Errors);
@@ -202,7 +204,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
-            var passwordUpdateFailedResponse = Assert.IsAssignableFrom<PasswordUpdateFailedResponse>(badRequestObjectResult.Value);
+            var passwordUpdateFailedResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestObjectResult.Value);
 
             Assert.Equal(400, statusCode);
             Assert.Contains("This user does not exist anymore", passwordUpdateFailedResponse.Errors);
@@ -233,7 +235,7 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
 
             var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
-            var passwordUpdateFailedResponse = Assert.IsAssignableFrom<PasswordUpdateFailedResponse>(badRequestObjectResult.Value);
+            var passwordUpdateFailedResponse = Assert.IsAssignableFrom<PasswordUpdateResponse>(badRequestObjectResult.Value);
 
             Assert.Equal(400, statusCode);
             Assert.Contains("Expired link, please make another request", passwordUpdateFailedResponse.Errors);
@@ -259,6 +261,92 @@ namespace ELA_Auth_Service.Tests.Controllers.V1
                 Password = "TestPassword123!",
                 Token = "CfDJ8JgR+bdQlp9AiexmNdwmv6Fo38Zi6LS1gfO/Ze2YXmV8QAWJos0oKWZ7FIrr+C2hKWVLgkMQ2Wr+zAiwk/z+Ow9f3rdThOSATiWIC8KVSraZvt7ZP2UR6dWPAZgZYZayPWGnGC6q2nc5NMPQQmIUFoiH+R9bMOnuM3bsML/sb7yAmXJILCLlcnH3qktSg9PauMExiY6eOnYzHIlm6een0aMHboXZ6lA1YtqtKQXd8RUB"
             });
+
+            var badRequestResult = Assert.IsType<NoContentResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+
+            Assert.Equal(204, statusCode);
+        }
+
+        #endregion
+
+        #region EmailConfirmationRequest
+
+        [TestMethod]
+        public async Task EmailConfirmationRequest_Method_Returns_BadRequest_On_IncorrectRequest()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.EmailConfirmationRequest(new EmailConfirmationRequest());
+
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestObjectResult.StatusCode);
+            var emailConfirmationResponse = Assert.IsAssignableFrom<EmailConfirmationResponse>(badRequestObjectResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.Contains("Please make sure you send correct request, field can't be null", emailConfirmationResponse.Errors);
+        }
+
+        [TestMethod]
+        public void EmailConfirmationRequest_Method_Returns_BadRequest_On_ModelStateFalse()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            controller.ModelState.AddModelError("", "Model is incorrect");
+
+            var result = controller.EmailConfirmationRequest(new EmailConfirmationRequest { Email = "WrongEmail" });
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var authFailedResponse = Assert.IsAssignableFrom<EmailConfirmationResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.False(authFailedResponse.CriticalError);
+            Assert.NotNull(authFailedResponse.Errors);
+            Assert.NotEmpty(authFailedResponse.Errors);
+        }
+
+        [TestMethod]
+        public async Task EmailConfirmationRequest_Method_Returns_BadRequest_On_ProblemWitSendingLinkToTheEmail()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+            securityServiceMock
+                .Setup(x => x.SendEmailConfirmationRequestAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new EmailConfirmationDto
+                {
+                    Errors = new[] { "Something went wrong, please try again or contact support" },
+                    CriticalError = false,
+                    Success = false
+                }));
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.EmailConfirmationRequest(new EmailConfirmationRequest { Email = "sam.atkins@gmail.com" });
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);
+            var emailConfirmationResponse = Assert.IsAssignableFrom<EmailConfirmationResponse>(badRequestResult.Value);
+
+            Assert.Equal(400, statusCode);
+            Assert.False(emailConfirmationResponse.CriticalError);
+            Assert.Contains("Something went wrong, please try again or contact support", emailConfirmationResponse.Errors);
+        }
+
+        [TestMethod]
+        public async Task EmailConfirmationRequest_Method_Returns_OK_On_SuccessRequest()
+        {
+            var securityServiceMock = new Mock<ISecurityService>();
+            securityServiceMock
+                .Setup(x => x.SendEmailConfirmationRequestAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new EmailConfirmationDto { Success = true }));
+
+            var controller = new SecurityController(securityServiceMock.Object);
+
+            var result = await controller.EmailConfirmationRequest(new EmailConfirmationRequest { Email = "sam.atkins@gmail.com" });
 
             var badRequestResult = Assert.IsType<NoContentResult>(result);
             var statusCode = Assert.IsAssignableFrom<int>(badRequestResult.StatusCode);

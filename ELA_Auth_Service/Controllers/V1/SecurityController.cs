@@ -26,19 +26,19 @@ namespace ELA_Auth_Service.Controllers.V1
         /// </summary>
         /// <response code="204">Success-full password reset request sending link to the provided email</response>
         /// <response code="400">Failed password reset request returns a list of errors, an error can be critical</response>
-        [ProducesResponseType(typeof(PasswordResetRequestFailedResponse), 400)]
+        [ProducesResponseType(typeof(PasswordUpdateResponse), 400)]
         [HttpPost(ApiRoutes.UserManager.PasswordResetRequest)]
         public async Task<IActionResult> PasswordResetRequest([FromBody] PasswordResetRequest request)
         {
             if (request.Email is null)
-                return BadRequest(new PasswordResetRequestFailedResponse
+                return BadRequest(new PasswordUpdateResponse
                 {
                     Errors = new[] { "Please make sure you send correct request, field can't be null" },
                     CriticalError = true
                 });
 
             if (!ModelState.IsValid)
-                return BadRequest(new PasswordResetRequestFailedResponse
+                return BadRequest(new PasswordUpdateResponse
                 {
                     Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
                 });
@@ -46,7 +46,7 @@ namespace ELA_Auth_Service.Controllers.V1
             var requestResponse = await _securityService.PasswordResetRequestAsync(request.Email);
 
             if (!requestResponse.Success)
-                return BadRequest(new PasswordResetRequestFailedResponse { Errors = requestResponse.Errors, CriticalError = requestResponse.CriticalError });
+                return BadRequest(new PasswordUpdateResponse { Errors = requestResponse.Errors, CriticalError = requestResponse.CriticalError });
 
             return NoContent();
         }
@@ -57,13 +57,13 @@ namespace ELA_Auth_Service.Controllers.V1
         /// </summary>
         /// <response code="204">Success-full password update setting new password for user</response>
         /// <response code="400">Failed password update, returns a list of errors, an error can be critical</response>
-        [ProducesResponseType(typeof(PasswordUpdateFailedResponse), 400)]
+        [ProducesResponseType(typeof(PasswordUpdateResponse), 400)]
         [HttpPut(ApiRoutes.UserManager.UpdatePassword)]
         public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateRequest request)
         {
             if (request.UserId is null || request.Password is null || request.Token is null)
             {
-                return BadRequest(new PasswordUpdateFailedResponse
+                return BadRequest(new PasswordUpdateResponse
                 {
                     Errors = new[] { "Please make sure you send correct request, field can't be null" },
                     CriticalError = true
@@ -73,7 +73,7 @@ namespace ELA_Auth_Service.Controllers.V1
             var resetResult = await _securityService.PasswordUpdateAsync(request.UserId, request.Password, request.Token);
 
             if (!resetResult.Success)
-                return BadRequest(new PasswordUpdateFailedResponse { Errors = resetResult.Errors, CriticalError = resetResult.CriticalError });
+                return BadRequest(new PasswordUpdateResponse { Errors = resetResult.Errors, CriticalError = resetResult.CriticalError });
 
             return NoContent();
         }
@@ -93,6 +93,12 @@ namespace ELA_Auth_Service.Controllers.V1
                 {
                     Errors = new[] { "Please make sure you send correct request, field can't be null" },
                     CriticalError = true
+                });
+
+            if (!ModelState.IsValid)
+                return BadRequest(new EmailConfirmationResponse
+                {
+                    Errors = ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage))
                 });
 
             var emailConfirmationRequestLink = await _securityService.SendEmailConfirmationRequestAsync(request.Email);
