@@ -59,26 +59,23 @@ namespace ELA_Auth_Service.Services.Implementation
 
             if (!passwordUpdateResult.Succeeded)
             {
+                //Valid token
                 if (passwordUpdateResult.Errors.FirstOrDefault(x => x.Description == "Invalid token.") is null)
                     return new PasswordUpdateDto { Errors = passwordUpdateResult.Errors.Select(x => x.Description) };
+                //-----------
 
+                //Invalid token
                 return new PasswordUpdateDto
                 {
-                    Errors = passwordUpdateResult.Errors.Select(x => x.Description),
+                    Errors = new[] { "Expired link, please make another request" },
                     CriticalError = true
                 };
+                //-------------
             }
 
             var refreshToken = _dataContext.RefreshTokens.FirstOrDefault(x => x.UserId == user.Id);
+            if (refreshToken != null) refreshToken.Invalidated = true;
 
-            if (refreshToken is null)
-                return new PasswordUpdateDto
-                {
-                    Errors = new[] { "Can't find refresh token for this user, this is miracle!" },
-                    CriticalError = true
-                };
-
-            refreshToken.Invalidated = true;
             await _dataContext.SaveChangesAsync();
 
             return new PasswordUpdateDto { Success = true };

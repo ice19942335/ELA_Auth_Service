@@ -49,7 +49,6 @@ namespace ELA_Auth_Service.Installers
 
             services.Configure<DataProtectionTokenProviderOptions>(o =>
                 o.TokenLifespan = TimeSpan.FromHours(3));
-
         }
     }
 }
