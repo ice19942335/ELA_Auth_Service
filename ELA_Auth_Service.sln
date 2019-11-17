@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ELA_Auth_Service", "ELA_Aut
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E2E91E9C-455D-4E93-B481-365F9BA1AC85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ELA_Auth_Service.Tests", "ELA_Auth_Service.Tests\ELA_Auth_Service.Tests.csproj", "{08429F50-37F2-4026-AB85-5564933F0E15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ELA_Auth_Service.UnitTests", "Tests\ELA_Auth_Service.Tests\ELA_Auth_Service.UnitTests.csproj", "{9824EC9B-C7A4-43ED-AEAD-23CBCC023DED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,16 +19,16 @@ Global
 		{A0048641-62E9-4745-9ECC-36202E7E2DAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0048641-62E9-4745-9ECC-36202E7E2DAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0048641-62E9-4745-9ECC-36202E7E2DAC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{08429F50-37F2-4026-AB85-5564933F0E15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08429F50-37F2-4026-AB85-5564933F0E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08429F50-37F2-4026-AB85-5564933F0E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08429F50-37F2-4026-AB85-5564933F0E15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9824EC9B-C7A4-43ED-AEAD-23CBCC023DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9824EC9B-C7A4-43ED-AEAD-23CBCC023DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9824EC9B-C7A4-43ED-AEAD-23CBCC023DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9824EC9B-C7A4-43ED-AEAD-23CBCC023DED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{08429F50-37F2-4026-AB85-5564933F0E15} = {E2E91E9C-455D-4E93-B481-365F9BA1AC85}
+		{9824EC9B-C7A4-43ED-AEAD-23CBCC023DED} = {E2E91E9C-455D-4E93-B481-365F9BA1AC85}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B834ABA7-9A40-408D-81C6-54832A4CF448}

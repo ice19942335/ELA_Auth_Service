@@ -1,32 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ELA_Auth_Service.Contracts.V1.Requests.Identity.Auth;
 using ELA_Auth_Service.Contracts.V1.Responses.Identity.Auth;
 using ELA_Auth_Service.Controllers.V1;
-using ELA_Auth_Service.Data;
-using ELA_Auth_Service.Data._MySqlDataContext;
 using ELA_Auth_Service.Domain.DTO;
-using ELA_Auth_Service.Domain.Entities;
-using ELA_Auth_Service.Options;
-using ELA_Auth_Service.Services.Implementation;
 using ELA_Auth_Service.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Renci.SshNet;
-using Swashbuckle.AspNetCore.Filters.Extensions;
-using Xunit.Sdk;
-
 using Assert = Xunit.Assert;
 
-namespace ELA_Auth_Service.Tests.Controllers.V1
+namespace ELA_Auth_Service.UnitTests.Controllers.V1
 {
     [TestClass]
     public class AuthenticationControllerTests

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ELA_Auth_Service.Contracts.V1.Requests.Identity.Email;
 using ELA_Auth_Service.Contracts.V1.Requests.Identity.Password;
 using ELA_Auth_Service.Contracts.V1.Responses.Identity.Email;
@@ -13,11 +9,9 @@ using ELA_Auth_Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Xunit.Sdk;
-
 using Assert = Xunit.Assert;
 
-namespace ELA_Auth_Service.Tests.Controllers.V1
+namespace ELA_Auth_Service.UnitTests.Controllers.V1
 {
     [TestClass]
     public class SecurityControllerTests
