@@ -7,12 +7,14 @@ using ELA_Auth_Service.Contracts.V1.Responses.Identity.Email;
 using ELA_Auth_Service.Contracts.V1.Responses.Identity.Password;
 using ELA_Auth_Service.Domain.Entities;
 using ELA_Auth_Service.Services.Interfaces;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ELA_Auth_Service.Controllers.V1
 {
+    [EnableCors("AllOrigins")]
     [Produces("application/json")]
     public class SecurityController : Controller
     {

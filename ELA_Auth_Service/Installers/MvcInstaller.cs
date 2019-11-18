@@ -49,6 +49,16 @@ namespace ELA_Auth_Service.Installers
 
             services.Configure<DataProtectionTokenProviderOptions>(o =>
                 o.TokenLifespan = TimeSpan.FromHours(3));
+
+            services.AddCors(x =>
+            {
+                x.AddPolicy(
+                    "AllOrigins",
+                    builder => 
+                        builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+            });
         }
     }
 }

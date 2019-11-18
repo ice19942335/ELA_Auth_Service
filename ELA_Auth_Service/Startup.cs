@@ -49,6 +49,8 @@ namespace ELA_Auth_Service
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseCors("AllOrigins");
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
