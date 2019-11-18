@@ -52,12 +52,10 @@ namespace ELA_Auth_Service.Installers
 
             services.AddCors(x =>
             {
-                x.AddPolicy(
-                    "AllOrigins",
-                    builder => 
-                        builder.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+                x.AddDefaultPolicy(builder =>
+                       builder.AllowAnyOrigin()
+                       .AllowAnyHeader()
+                       .AllowAnyMethod());
             });
         }
     }

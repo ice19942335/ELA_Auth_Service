@@ -51,12 +51,10 @@ namespace ELA_Auth_Service
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors("AllOrigins");
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers().RequireCors("AllOrigins");
-
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
