@@ -14,7 +14,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ELA_Auth_Service.Controllers.V1
 {
-    [EnableCors("AllOrigins")]
     [Produces("application/json")]
     public class SecurityController : Controller
     {

@@ -1,9 +1,11 @@
 using ELA_Auth_Service.Installers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SendGrid.Helpers.Mail;
 
 namespace ELA_Auth_Service
 {
@@ -53,6 +55,8 @@ namespace ELA_Auth_Service
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers().RequireCors("AllOrigins");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
