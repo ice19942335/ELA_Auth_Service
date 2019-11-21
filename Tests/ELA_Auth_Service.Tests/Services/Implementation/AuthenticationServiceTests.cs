@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ELA_Auth_Service.Data;
@@ -28,7 +29,6 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
     public class AuthenticationServiceTests
     {
         private AuthenticationService _authenticationService;
-        private Mock<UserManager<AppUser>> _userManagerMock;
 
         [TestInitialize]
         public void Initialize()
@@ -49,18 +49,11 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
             var mySqlDataContext = serviceScope.ServiceProvider.GetRequiredService<MySqlDataContext>();
             var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<AuthenticationService>>();
 
-
-            var store = new Mock<IUserStore<AppUser>>();
-            _userManagerMock = new Mock<UserManager<AppUser>>(store.Object, null, null, null, null, null, null, null, null);
-            _userManagerMock.Object.UserValidators.Add(new UserValidator<AppUser>());
-            _userManagerMock.Object.PasswordValidators.Add(new PasswordValidator<AppUser>());
-  
-
             _authenticationService = new AuthenticationService(
                 securityService,
                 emailService,
                 configuration,
-                _userManagerMock.Object,
+                userManager,
                 jwtSettings,
                 tokenValidationParameters,
                 context,
@@ -70,7 +63,7 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         }
 
         [TestMethod]
-        public async Task RegisterAsync_Method_Returns_AuthenticationDto_SuccessEqualFalse_And_ErrorList_On_ExistingUser()
+        public async Task RegisterAsync_Method_Returns_Error_On_ExistingUser()
         {
             //Arrange
             var email = "sam.atkins@gmail.com";
@@ -79,10 +72,6 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
 
             var expectedErrorList = new[] { "User with this email address already exists" };
 
-            _userManagerMock
-                .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new AppUser()));
-
             //Act
             var result = await _authenticationService.RegisterAsync(email, password, name);
 
@@ -90,6 +79,39 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
 
             var authenticationDtoResult = Assert.IsAssignableFrom<AuthenticationDto>(result);
             Assert.Equal(expectedErrorList, authenticationDtoResult.Errors);
+            Assert.False(authenticationDtoResult.CriticalError);
+            Assert.False(authenticationDtoResult.Success);
+            Assert.Null(authenticationDtoResult.Token);
+            Assert.Null(authenticationDtoResult.RefreshToken);
+        }
+
+        [TestMethod]
+        public async Task Register_Method_Returns_Error_On_UserCreatingInContext()
+        {
+            //Arrange
+            var email = "sam.atkins.unique.email.never.being.registred@gmail.com";
+            var password = "Password123";
+            var name = "Sam";
+
+            var expectedErrorList = new[]
+            {
+                "Passwords must be at least 6 characters.",
+                "Passwords must have at least one non alphanumeric character.",
+                "Passwords must have at least one digit ('0'-'9').",
+                "Passwords must have at least one lowercase ('a'-'z').",
+                "Passwords must have at least one uppercase ('A'-'Z').",
+                "Passwords must use at least 1 different characters."
+            };
+
+            //Act
+            var result = await _authenticationService.RegisterAsync(email, password, name);
+
+            //Assert
+            var authenticationDtoResult = Assert.IsAssignableFrom<AuthenticationDto>(result);
+
+            foreach (var error in authenticationDtoResult.Errors.ToArray())
+                Assert.Contains(error, expectedErrorList);
+            
             Assert.False(authenticationDtoResult.CriticalError);
             Assert.False(authenticationDtoResult.Success);
             Assert.Null(authenticationDtoResult.Token);
