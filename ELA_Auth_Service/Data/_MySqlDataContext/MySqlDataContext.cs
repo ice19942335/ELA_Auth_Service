@@ -17,7 +17,7 @@ namespace ELA_Auth_Service.Data._MySqlDataContext
         public async Task<bool> CreateUser(Guid guid, string name, int points)
         {
             var cmd = Connection.CreateCommand();
-            cmd.CommandText = $@"INSERT INTO Users(userId,first_name,points,reg_date) VALUES('{guid.ToString()}','{name}',{points},'{DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")}');";
+            cmd.CommandText = $@"INSERT INTO Users(userId,first_name,points,reg_date) VALUES('{guid.ToString()}','{name}',{points},'{DateTime.Now:yyyy-MM-dd H:mm:ss}');";
             var rowsAffected = await cmd.ExecuteNonQueryAsync();
 
             if (rowsAffected < 1)
