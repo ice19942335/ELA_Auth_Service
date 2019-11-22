@@ -1,5 +1,6 @@
-﻿using ELA_Auth_Service.Data;
-using ELA_Auth_Service.Data._MySqlDataContext;
+﻿
+using ELA_Auth_Service._Data.ElaAuthDB;
+using ELA_Auth_Service._MySqlDataContext;
 using ELA_Auth_Service.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +13,12 @@ namespace ELA_Auth_Service.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<DataContext>(options =>
+            services.AddDbContext<ElaAuthContext>(options =>
                 //options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
                 options.UseSqlServer(configuration.GetConnectionString("AuthProductionConnection")));
             services.AddDefaultIdentity<AppUser>()
                     .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<DataContext>();
+                    .AddEntityFrameworkStores<ElaAuthContext>();
 
             services.AddTransient<MySqlDataContext>(_ => new MySqlDataContext(configuration.GetConnectionString("DataServiceConnection")));
         }

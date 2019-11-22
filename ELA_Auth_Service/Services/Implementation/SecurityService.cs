@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Data;
+using ELA_Auth_Service._Data.ElaAuthDB;
 using ELA_Auth_Service.Domain.DTO;
 using ELA_Auth_Service.Domain.Entities;
 using ELA_Auth_Service.Services.Interfaces;
@@ -15,10 +15,10 @@ namespace ELA_Auth_Service.Services.Implementation
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly string _clientUrl;
-        private readonly DataContext _dataContext;
+        private readonly ElaAuthContext _dataContext;
         private readonly IEmailService _emailService;
 
-        public SecurityService(IConfiguration configuration, UserManager<AppUser> userManager, DataContext dataContext, IEmailService emailService)
+        public SecurityService(IConfiguration configuration, UserManager<AppUser> userManager, ElaAuthContext dataContext, IEmailService emailService)
         {
             _userManager = userManager;
             _dataContext = dataContext;

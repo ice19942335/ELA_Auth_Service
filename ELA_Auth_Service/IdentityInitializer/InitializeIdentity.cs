@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Data;
-using ELA_Auth_Service.Data._MySqlDataContext;
+using ELA_Auth_Service._Data;
+using ELA_Auth_Service._Data.ElaAuthDB;
+using ELA_Auth_Service._MySqlDataContext;
 using ELA_Auth_Service.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,12 +11,12 @@ namespace ELA_Auth_Service.IdentityInitializer
     public class InitializeIdentity
     {
 
-        private readonly DataContext _context;
+        private readonly ElaAuthContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly MySqlDataContext _mySqlDataContext;
 
-        public InitializeIdentity(DataContext ctx, 
+        public InitializeIdentity(ElaAuthContext ctx, 
             UserManager<AppUser> userManager, 
             RoleManager<IdentityRole> roleManager,
                 MySqlDataContext mySqlDataContext)

@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Data;
-using ELA_Auth_Service.Data._MySqlDataContext;
+using ELA_Auth_Service._Data.ElaAuthDB;
+using ELA_Auth_Service._MySqlDataContext;
 using ELA_Auth_Service.Domain.Entities;
 using ELA_Auth_Service.IdentityInitializer;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +36,7 @@ namespace ELA_Auth_Service
 
                 using (var serviceScope = host.Services.CreateScope())
                 {
-                    var dbContext = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
+                    var dbContext = serviceScope.ServiceProvider.GetRequiredService<ElaAuthContext>();
 
                     await dbContext.Database.MigrateAsync();
 

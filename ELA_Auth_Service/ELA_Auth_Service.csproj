@@ -10,28 +10,6 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Data\DataServiceContext\**" />
-    <Content Remove="Data\DataServiceContext\**" />
-    <EmbeddedResource Remove="Data\DataServiceContext\**" />
-    <None Remove="Data\DataServiceContext\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Data\Migrations\20191103191554_Initial.cs" />
-    <Compile Remove="Data\Migrations\20191103191554_Initial.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191103191657_Added_Posts.cs" />
-    <Compile Remove="Data\Migrations\20191103191657_Added_Posts.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191104114303_Added_UserId.cs" />
-    <Compile Remove="Data\Migrations\20191104114303_Added_UserId.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191104130737_Added_RefreshTokent.cs" />
-    <Compile Remove="Data\Migrations\20191104130737_Added_RefreshTokent.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191104200620_Production_DB.cs" />
-    <Compile Remove="Data\Migrations\20191104200620_Production_DB.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191106183904_Added_Name_In_AppUser.cs" />
-    <Compile Remove="Data\Migrations\20191106183904_Added_Name_In_AppUser.Designer.cs" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.4.0.1" />
@@ -52,7 +30,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Data\_MySqlDataContext\" />
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 

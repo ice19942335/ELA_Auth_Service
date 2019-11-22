@@ -5,8 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using ELA_Auth_Service.Data;
-using ELA_Auth_Service.Data._MySqlDataContext;
+using ELA_Auth_Service._Data.ElaAuthDB;
+using ELA_Auth_Service._MySqlDataContext;
 using ELA_Auth_Service.Domain.DTO;
 using ELA_Auth_Service.Domain.Entities;
 using ELA_Auth_Service.IdentityInitializer;
@@ -26,7 +26,7 @@ namespace ELA_Auth_Service.Services.Implementation
         private readonly UserManager<AppUser> _userManager;
         private readonly JwtSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
-        private readonly DataContext _context;
+        private readonly ElaAuthContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly MySqlDataContext _mySqlDataContext;
         private readonly ILogger<AuthenticationService> _logger;
@@ -38,7 +38,7 @@ namespace ELA_Auth_Service.Services.Implementation
             UserManager<AppUser> userManager,
             JwtSettings jwtSettings,
             TokenValidationParameters tokenValidationParameters,
-            DataContext context,
+            ElaAuthContext context,
             RoleManager<IdentityRole> roleManager,
             MySqlDataContext mySqlDataContext,
             ILogger<AuthenticationService> logger)
