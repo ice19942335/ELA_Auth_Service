@@ -17,6 +17,6 @@ jobs:
       with:
         dotnet-version: 3.0.100
     - name: Build with dotnet
-      run: dotnet build ./src/Solution.sln --configuration Release
+      run: dotnet build ./Ela_Auth_Service.API/ELA_Auth_Service.csproj --configuration Release
     - name: Test with dotnet
-      run: dotnet test ./src/Solution.sln --configuration Release
+      run: dotnet test ./ELA_Auth_Service.UnitTests/ELA_Auth_Service.UnitTests.csproj --configuration Release
