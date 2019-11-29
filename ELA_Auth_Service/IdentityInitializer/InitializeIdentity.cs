@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ELA_Auth_Service._Data;
+using ELA_Auth_Service._Data._MySqlDataContext;
 using ELA_Auth_Service._Data.ElaAuthDB;
-using ELA_Auth_Service._MySqlDataContext;
 using ELA_Auth_Service.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 

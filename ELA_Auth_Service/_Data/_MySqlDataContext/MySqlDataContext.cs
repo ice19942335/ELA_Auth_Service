@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
-namespace ELA_Auth_Service._MySqlDataContext
+namespace ELA_Auth_Service._Data._MySqlDataContext
 {
     public class MySqlDataContext : IDisposable
     {

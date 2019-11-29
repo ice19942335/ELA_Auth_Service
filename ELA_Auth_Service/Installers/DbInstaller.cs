@@ -1,7 +1,7 @@
 ﻿
+using ELA_Auth_Service._Data._MySqlDataContext;
 using ELA_Auth_Service._Data.ElaAuthDB;
 using ELA_Auth_Service._Data.ElaDataDB;
-using ELA_Auth_Service._MySqlDataContext;
 using ELA_Auth_Service.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
