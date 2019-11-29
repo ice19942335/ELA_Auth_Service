@@ -16,4 +16,4 @@ jobs:
     - name: Build with dotnet
       run: dotnet build ./Ela_Auth_Service.API/ELA_Auth_Service.csproj --configuration Release
     - name: Test with dotnet
-      run: dotnet test ./Solution.sln --configuration Release
+      run: dotnet test ./ELA_Auth_Service.UnitTests/ELA_Auth_Service.UnitTests.csproj --configuration Release
