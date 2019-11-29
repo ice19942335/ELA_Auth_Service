@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ELA_Auth_Service\ELA_Auth_Service.csproj" />
+    <ProjectReference Include="..\ELA_Auth_Service\ELA_Auth_Service.csproj" />
   </ItemGroup>
 
 </Project>
