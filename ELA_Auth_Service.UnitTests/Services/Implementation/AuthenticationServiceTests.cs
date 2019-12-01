@@ -24,7 +24,9 @@ using Assert = Xunit.Assert;
 
 namespace ELA_Auth_Service.UnitTests.Services.Implementation
 {
-    //This class using real DI pipeline with real Database
+    /// <summary>
+    /// This class using real DI pipeline with real Database
+    /// </summary>
     [TestClass]
     public class AuthenticationServiceTests
     {
@@ -86,7 +88,7 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         }
 
         [TestMethod]
-        public async Task Register_Method_Returns_Error_On_UserCreatingInContext()
+        public async Task RegisterAsync_Method_Returns_Error_On_PasswordDoesNotMeetTheRequirements()
         {
             //Arrange
             var email = "sam.atkins.unique.email.never.being.registred@gmail.com";
@@ -113,6 +115,34 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
                 Assert.Contains(error, expectedErrorList);
             
             Assert.False(authenticationDtoResult.CriticalError);
+            Assert.False(authenticationDtoResult.Success);
+            Assert.Null(authenticationDtoResult.Token);
+            Assert.Null(authenticationDtoResult.RefreshToken);
+        }
+
+        [TestMethod]
+        public async Task RegisterAsync_Method_Returns_Error_On_ProblemOnWritingInToDataServiceDB()
+        {
+            //Arrange
+            var email = "sam.atkins.unique.email.never.being.registred@gmail.com";
+            var password = "Password123!";
+            var name = "SamaaaaaaaSamaaaaaaaSamaaaaaaaSamaaaaaaaSamaaaaaaa";
+
+            var expectedErrorList = new[] 
+            {
+                "Problem on writing entry in DATA SERVICE DB"
+            };
+
+            //Act
+            var result = await _authenticationService.RegisterAsync(email, password, name);
+
+            //Assert
+            var authenticationDtoResult = Assert.IsAssignableFrom<AuthenticationDto>(result);
+
+            foreach (var error in authenticationDtoResult.Errors.ToArray())
+                Assert.Contains(error, expectedErrorList);
+
+            Assert.True(authenticationDtoResult.CriticalError);
             Assert.False(authenticationDtoResult.Success);
             Assert.Null(authenticationDtoResult.Token);
             Assert.Null(authenticationDtoResult.RefreshToken);

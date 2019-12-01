@@ -80,7 +80,7 @@ namespace ELA_Auth_Service.Services.Implementation
             if (!addUserInMySqlDb)
             {
                 await _userManager.DeleteAsync(newUser);
-                return new AuthenticationDto { Errors = new[] { "Problem on writing entry in MySqlDB" }, CriticalError = true };
+                return new AuthenticationDto { Errors = new[] { "Problem on writing entry in DATA SERVICE DB" }, CriticalError = true };
             }
 
             await _securityService.SendEmailConfirmationRequestAsync(email);
