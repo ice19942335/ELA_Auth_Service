@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 
 namespace ELA_Auth_Service._Data._MySqlDataContext
@@ -16,9 +17,18 @@ namespace ELA_Auth_Service._Data._MySqlDataContext
 
         public async Task<bool> CreateUser(Guid guid, string name, int points)
         {
+            int? rowsAffected;
+
             var cmd = Connection.CreateCommand();
             cmd.CommandText = $@"INSERT INTO Users(userId,first_name,points,reg_date) VALUES('{guid.ToString()}','{name}',{points},'{DateTime.Now:yyyy-MM-dd H:mm:ss}');";
-            var rowsAffected = await cmd.ExecuteNonQueryAsync();
+            try
+            {
+                rowsAffected = await cmd.ExecuteNonQueryAsync();
+            }
+            catch
+            {
+                return false;
+            }
 
             if (rowsAffected < 1)
                 return false;
