@@ -147,5 +147,25 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
             Assert.Null(authenticationDtoResult.Token);
             Assert.Null(authenticationDtoResult.RefreshToken);
         }
+
+        [TestMethod]
+        public async Task RegisterAsync_Method_Returns_Success_And_Tokens()
+        {
+            //Arrange
+            var email = $"AutoTestUser_{Guid.NewGuid().ToString().Substring(0, 8)}@mail.com";
+            var password = "Password123!";
+            var name = "AutoTestUser";
+
+            //Act
+            var result = await _authenticationService.RegisterAsync(email, password, name);
+
+            //Assert
+            var authenticationDtoResult = Assert.IsAssignableFrom<AuthenticationDto>(result);
+
+            Assert.False(authenticationDtoResult.CriticalError);
+            Assert.True(authenticationDtoResult.Success);
+            Assert.NotNull(authenticationDtoResult.Token);
+            Assert.NotNull(authenticationDtoResult.RefreshToken);
+        }
     }
 }
