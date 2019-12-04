@@ -14,16 +14,20 @@ namespace ELA_Auth_Service.Services.Implementation
     public class SecurityService : ISecurityService
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly string _clientUrl;
         private readonly ElaAuthContext _dataContext;
         private readonly IEmailService _emailService;
+
+        private readonly string _clientResetPasswordUrl;
+        private readonly string _clientEmailConfirmationUrl;
+
 
         public SecurityService(IConfiguration configuration, UserManager<AppUser> userManager, ElaAuthContext dataContext, IEmailService emailService)
         {
             _userManager = userManager;
             _dataContext = dataContext;
             _emailService = emailService;
-            _clientUrl = configuration["ClientSidePasswordResetPath"];
+            _clientResetPasswordUrl = configuration["ClientSidePasswordResetPath"];
+            _clientEmailConfirmationUrl = configuration["ClientSideEmailConfirmationPath"];
         }
 
         public async Task<PasswordUpdateDto> PasswordResetRequestAsync(string email)
@@ -38,7 +42,7 @@ namespace ELA_Auth_Service.Services.Implementation
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var callBackUrl = $"<a href='{_clientUrl}?userId={user.Id}&token={token}'>Click this link to reset password</a>";
+            var callBackUrl = $"<a href='{_clientResetPasswordUrl}?userId={user.Id}&token={token}'>Click this link to reset password</a>";
 
             var sendEmailResult = await _emailService.SendEmailAsync(user.Email, "ELA Password reset", callBackUrl);
 
@@ -86,7 +90,7 @@ namespace ELA_Auth_Service.Services.Implementation
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var callBackUrl = $"<a href='{_clientUrl}?userId={user.Id}&token={token}'>Click this link to confirm e-mail</a>";
+            var callBackUrl = $"<a href='{_clientEmailConfirmationUrl}?userId={user.Id}&token={token}'>Click this link to confirm e-mail</a>";
 
             var sendEmailConfirmationLinkResult = await _emailService.SendEmailAsync(user.Email, "ELA E-mail confirmation", callBackUrl);
 
