@@ -7,6 +7,7 @@ using ELA_Auth_Service._Data._MySqlDataContext;
 using ELA_Auth_Service._Data.ElaAuthDB;
 using ELA_Auth_Service.Domain.DTO;
 using ELA_Auth_Service.Domain.Entities;
+using ELA_Auth_Service.IdentityInitializer;
 using ELA_Auth_Service.Options;
 using ELA_Auth_Service.Services.Implementation;
 using ELA_Auth_Service.Services.Interfaces;
@@ -68,9 +69,9 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         public async Task RegisterAsync_Method_Returns_Error_On_ExistingUser()
         {
             //Arrange
-            var email = "sam.atkins@gmail.com";
-            var password = "Password123!";
-            var name = "Sam";
+            var email = DefaultIdentity.AdminUserName;
+            var password = DefaultIdentity.DefaultAdminPassword;
+            var name = DefaultIdentity.DefaultAdminName;
 
             var expectedErrorList = new[] { "User with this email address already exists" };
 
@@ -91,9 +92,9 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         public async Task RegisterAsync_Method_Returns_Error_On_PasswordDoesNotMeetTheRequirements()
         {
             //Arrange
-            var email = "sam.atkins.unique.email.never.being.registred@gmail.com";
+            var email = $"UniqueMail_{Guid.NewGuid().ToString().Substring(0, 8)}@mail.com";
             var password = "Password123";
-            var name = "Sam";
+            var name = "AutoTestUser";
 
             var expectedErrorList = new[]
             {
@@ -124,9 +125,9 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         public async Task RegisterAsync_Method_Returns_Error_On_ProblemOnWritingInToDataServiceDB()
         {
             //Arrange
-            var email = "sam.atkins.unique.email.never.being.registred@gmail.com";
+            var email = $"UniqueMail_{Guid.NewGuid().ToString().Substring(0, 8)}@mail.com";
             var password = "Password123!";
-            var name = "SamaaaaaaaSamaaaaaaaSamaaaaaaaSamaaaaaaaSamaaaaaaa";
+            var name = "AutoTestUser_Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
             var expectedErrorList = new[] 
             {
