@@ -35,14 +35,14 @@ namespace ELA_Auth_Service.IdentityInitializer
             if (!await _roleManager.RoleExistsAsync(DefaultIdentity.RoleUser))
                 await _roleManager.CreateAsync(new IdentityRole(DefaultIdentity.RoleUser));
 
-            if (await _userManager.FindByEmailAsync(DefaultIdentity.AdminUserName) is null)
+            if (await _userManager.FindByEmailAsync(DefaultIdentity.DefaultAdminUserName) is null)
             {
                 var guid = Guid.NewGuid();
                 var admin = new AppUser
                 {
                     Id = guid.ToString(),
-                    UserName = DefaultIdentity.AdminUserName,
-                    Email = DefaultIdentity.AdminUserName,
+                    UserName = DefaultIdentity.DefaultAdminUserName,
+                    Email = DefaultIdentity.DefaultAdminUserName,
                     EmailConfirmed = true,
                     Name = DefaultIdentity.DefaultAdminName
                 };
@@ -54,7 +54,7 @@ namespace ELA_Auth_Service.IdentityInitializer
                     await _userManager.AddToRoleAsync(admin, DefaultIdentity.RoleUser);
                 }
 
-                var addUserInMySqlDb = await _mySqlDataContext.CreateUser(guid, DefaultIdentity.AdminUserName, 10);
+                var addUserInMySqlDb = await _mySqlDataContext.CreateUser(guid, DefaultIdentity.DefaultAdminUserName, 10);
 
                 if (!addUserInMySqlDb)
                     await _userManager.DeleteAsync(admin);

@@ -69,7 +69,7 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         public async Task RegisterAsync_Method_Returns_Error_On_ExistingUser()
         {
             //Arrange
-            var email = DefaultIdentity.AdminUserName;
+            var email = DefaultIdentity.DefaultAdminUserName;
             var password = DefaultIdentity.DefaultAdminPassword;
             var name = DefaultIdentity.DefaultAdminName;
 
