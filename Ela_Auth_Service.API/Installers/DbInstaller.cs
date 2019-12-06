@@ -17,9 +17,6 @@ namespace ELA_Auth_Service.Installers
             services.AddDbContext<ElaAuthContext>(options =>
                 //options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
                 options.UseSqlServer(configuration.GetConnectionString("AuthProductionConnection")));
-            services.AddDefaultIdentity<AppUser>()
-                    .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<ElaAuthContext>();
 
             services.AddTransient<MySqlDataContext>(_ => new MySqlDataContext(configuration.GetConnectionString("DataServiceConnection")));
         }

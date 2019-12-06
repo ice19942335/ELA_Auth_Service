@@ -86,5 +86,27 @@ namespace ELA_Auth_Service.IntegrationTests.Controllers.V1
             Assert.False(failedLoginResult.CriticalError);
         }
 
+
+        [TestMethod]
+        public async Task Register_Success_ReturnsTokens_Critical_False()
+        {
+            //Arrange
+
+            //Act
+            var response = await TestClient.PostAsJsonAsync(
+                ApiRoutes.Authentication.Register,
+                new UserRegistrationRequest
+                {
+                    Name = "Sam",
+                    Email = $"Sam_{Guid.NewGuid().ToString().Substring(0, 6)}@mail.com",
+                    Password = "Password123!"
+                });
+
+            var failedLoginResult = await response.Content.ReadAsAsync<AuthSuccessResponse>();
+
+            //Assert
+            Assert.NotNull(failedLoginResult.Token);
+            Assert.NotNull(failedLoginResult.RefreshToken);
+        }
     }
 }
