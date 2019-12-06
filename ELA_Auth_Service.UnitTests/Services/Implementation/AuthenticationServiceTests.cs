@@ -92,8 +92,8 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         public async Task RegisterAsync_Method_Returns_Error_On_PasswordDoesNotMeetTheRequirements()
         {
             //Arrange
-            var email = $"UniqueMail_{Guid.NewGuid().ToString().Substring(0, 8)}@mail.com";
-            var password = "Password123";
+            var email = $"UniqueMail_{Guid.NewGuid().ToString().Substring(0, 6)}@mail.com";
+            var password = "";
             var name = "AutoTestUser";
 
             var expectedErrorList = new[]
@@ -125,7 +125,7 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         public async Task RegisterAsync_Method_Returns_Error_On_ProblemOnWritingInToDataServiceDB()
         {
             //Arrange
-            var email = $"UniqueMail_{Guid.NewGuid().ToString().Substring(0, 8)}@mail.com";
+            var email = $"UniqueMail_{Guid.NewGuid().ToString().Substring(0, 6)}@mail.com";
             var password = "Password123!";
             var name = "AutoTestUser_Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
@@ -153,7 +153,7 @@ namespace ELA_Auth_Service.UnitTests.Services.Implementation
         public async Task RegisterAsync_Method_Returns_Success_And_Tokens()
         {
             //Arrange
-            var email = $"AutoTestUser_{Guid.NewGuid().ToString().Substring(0, 8)}@mail.com";
+            var email = $"AutoTestUser_{Guid.NewGuid().ToString().Substring(0, 6)}@mail.com";
             var password = "Password123!";
             var name = "AutoTestUser";
 
