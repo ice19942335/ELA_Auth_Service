@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using ELA_Auth_Service._Data._MySqlDataContext;
 using ELA_Auth_Service.Contracts.V1;
 using ELA_Auth_Service.Contracts.V1.Requests.Identity.Auth;
 using ELA_Auth_Service.Contracts.V1.Responses.Identity.Auth;
 using ELA_Auth_Service.IdentityInitializer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -30,6 +32,7 @@ namespace ELA_Auth_Service.IntegrationTests.Controllers.V1
 
             //Assert
             Assert.Contains(expectedError, failedLoginResult.Errors);
+            Assert.True(failedLoginResult.CriticalError);
         }
 
         [TestMethod]
@@ -49,6 +52,7 @@ namespace ELA_Auth_Service.IntegrationTests.Controllers.V1
 
             //Assert
             Assert.Contains(expectedError, failedLoginResult.Errors);
+            Assert.False(failedLoginResult.CriticalError);
         }
 
         [TestMethod]
@@ -79,6 +83,8 @@ namespace ELA_Auth_Service.IntegrationTests.Controllers.V1
 
             //Assert
             failedLoginResult.Errors.ToList().ForEach(x => Assert.Contains(x, failedLoginResult.Errors));
+            Assert.False(failedLoginResult.CriticalError);
         }
+
     }
 }

@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using ELA_Auth_Service._Data._MySqlDataContext;
 using ELA_Auth_Service._Data.ElaAuthDB;
 using ELA_Auth_Service._Data.ElaDataDB;
 using ELA_Auth_Service.Contracts.V1;
@@ -12,6 +13,7 @@ using ELA_Auth_Service.IdentityInitializer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
@@ -21,12 +23,13 @@ namespace ELA_Auth_Service.IntegrationTests
 {
     public class IntegrationTest
     {
-        protected readonly HttpClient TestClient;
+        protected HttpClient TestClient;
+        protected WebApplicationFactory<Startup> AppFactory;
 
         protected IntegrationTest()
         {
-            var appFactory = new WebApplicationFactory<Startup>();
-            TestClient = appFactory.CreateClient();
+            AppFactory = new WebApplicationFactory<Startup>();
+            TestClient = AppFactory.CreateClient();
         }
 
         protected async Task AuthenticateAdminAsync()
